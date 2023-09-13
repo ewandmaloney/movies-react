@@ -1,11 +1,12 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import LiveTvIcon from "@mui/icons-material/LiveTv";
 
 const MovieDetail = () => {
   const params = useParams();
@@ -13,13 +14,15 @@ const MovieDetail = () => {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [movie, setMovie] = useState();
+  const [item, setItem] = useState();
   const [movieUrl, setMovieUrl] = useState(
     `https://api.themoviedb.org/3/movie/${params.id}?language=es-ES`
   );
 
   const [movieTrailer, setMovieTrailer] = useState(
-    `https://api.themoviedb.org/3/movie/${params.id}/videos?language=es-ES`
+    `https://api.themoviedb.org/3/movie/${params.id}/videos?language=en-US`
   );
+  const [fullText, setFullText] = useState();
 
   useEffect(() => {
     const options = {
@@ -32,7 +35,7 @@ const MovieDetail = () => {
     const fetch = async () => {
       const res = await axios.get(movieTrailer, options);
       console.log(res.data.results);
-      setMovieTrailer(res);
+      setItem(res.data.results);
     };
     fetch();
   }, [movieTrailer]);
@@ -53,16 +56,21 @@ const MovieDetail = () => {
   }, [movieUrl]);
 
   const style = {
+    borderRadius: "10px",
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 1200,
-    height: 800,
-    bgcolor: "background.paper",
+    width: 1000,
+    height: 500,
+    bgcolor: "#181818",
     border: "2px solid #000",
-    boxShadow: 24,
+    boxShadow: "24",
     p: 4,
+  };
+
+  const fullDescription = (text) => {
+    setFullText((prevText) => (prevText ? null : text));
   };
 
   return (
@@ -84,7 +92,7 @@ const MovieDetail = () => {
           <>
             <Grid item>
               <img
-                className="movies-img"
+                className="moviesDetail-img"
                 src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
                 alt="movie-image"
               />
@@ -114,41 +122,82 @@ const MovieDetail = () => {
               <Typography variant="h5" component="div" color="violet">
                 Descripcion:
               </Typography>
-              <Typography variant="h5" component="div" color="white">
-                {movie.overview}
+              <Typography
+                sx={{ display: "flex", flexDirection: "column" }}
+                variant="h5"
+                component="div"
+                color="white"
+              >
+                {movie.overview.length > 200 ? (
+                  <>
+                    <p>
+                      {!fullText
+                        ? movie.overview.substring(0, 200) + "..."
+                        : fullText}
+                    </p>
+                    <p
+                      className="full-description"
+                      onClick={() => fullDescription(movie.overview)}
+                    >
+                      {fullText
+                        ? "Ocultar descripción"
+                        : "Ver descripción completa"}
+                    </p>
+                  </>
+                ) : (
+                  <>{movie.overview}</>
+                )}
               </Typography>
+              {!item ? null : (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<LiveTvIcon />}
+                    onClick={handleOpen}
+                  >
+                    Ver trailer
+                  </Button>
+                  <Modal
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                  >
+                    <Box sx={style}>
+                      <Typography
+                        textAlign="center"
+                        color="white"
+                        id="modal-modal-title"
+                        variant="h4"
+                        component="h2"
+                      >
+                        Trailer oficial
+                      </Typography>
+                      <Typography textAlign="center">
+                        <iframe
+                          width="800"
+                          height="400"
+                          src={`https://www.youtube.com/embed/${item[0].key}`}
+                          frameBorder="0"
+                          allow="autoplay; encrypted-media"
+                          allowFullScreen
+                          title="video"
+                        />
+                      </Typography>
+                    </Box>
+                  </Modal>
+                </Box>
+              )}
             </Grid>
           </>
         )}
-        <Grid container>
-          {!movieTrailer ? null : (
-            <div>
-              <Button variant="contained" color="primary" onClick={handleOpen}>
-                Ver trailer
-              </Button>
-              <Modal
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-              >
-                <Box sx={style}>
-                  <Typography
-                    id="modal-modal-title"
-                    variant="h6"
-                    component="h2"
-                  >
-                    Trailer oficial
-                  </Typography>
-                  <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                    Duis mollis, est non commodo luctus, nisi erat porttitor
-                    ligula.
-                  </Typography>
-                </Box>
-              </Modal>
-            </div>
-          )}
-        </Grid>
       </Grid>
     </Box>
   );

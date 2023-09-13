@@ -6,6 +6,8 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 
 const Movies = () => {
   const [page, setPage] = useState(1);
@@ -15,16 +17,6 @@ const Movies = () => {
   );
 
   const navigate = useNavigate();
-
-  const loadMoreFilms = () => {
-    const number = page;
-    setUrl(
-      `https://api.themoviedb.org/3/movie/now_playing?language=es-ES&page=${
-        number + 1
-      }`
-    );
-    setPage(number + 1);
-  };
 
   const goToDetails = (id) => {
     navigate(`/movie/${id}`);
@@ -47,6 +39,17 @@ const Movies = () => {
     };
     fetch();
   }, [url]);
+
+  useEffect(() => {
+    // Actualiza la URL cuando cambie la página
+    setUrl(
+      `https://api.themoviedb.org/3/movie/now_playing?language=es-ES&page=${page}`
+    );
+  }, [page]);
+
+  const handleChange = (event, value) => {
+    setPage(value);
+  };
 
   return (
     <Box
@@ -94,7 +97,8 @@ const Movies = () => {
                     className="movies-img"
                     src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
                     alt="poster image"
-                    width="300px"
+                    width="325px"
+                    height="487.5"
                   />
 
                   <CardContent
@@ -140,22 +144,25 @@ const Movies = () => {
           </>
         )}
       </Grid>
-      <Typography
-        onClick={loadMoreFilms}
-        variant="h5"
-        component="div"
-        textAlign="center"
+      <Box
+        className="pagination-container "
         sx={{
-          color: "white",
-          marginTop: "10px",
-          cursor: "pointer",
-          ":hover": {
-            textDecoration: "underline",
-          },
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "450px",
+          margin: "0 auto",
         }}
       >
-        Siguiente página
-      </Typography>
+        <Pagination
+          className="pagination"
+          size="large"
+          color="primary"
+          count={95}
+          page={page}
+          onChange={handleChange}
+        />
+      </Box>
     </Box>
   );
 };

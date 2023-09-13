@@ -3,6 +3,7 @@
   margin: 0;
   box-sizing: border-box;
   font-family: 'Times New Roman', Times, serif;
+
 }
 
 body{
@@ -10,9 +11,37 @@ body{
 }
 
 .movies-card{
-  background: "red";
+  
+}
+
+.pagination-container{
+  background-color: #181818;
+}
+
+.pagination-container ul li button:hover{
+  background-color: #529ef5
+}
+
+.pagination ul li button{
+  color: white;
+}
+
+.pagination ul li div{
+  color: white;
 }
 
 .movies-img{
   border-radius: 10px;
+}
+
+.moviesDetail-img{
+  border-radius: 10px;
+  height: 550px;
+  width: auto;
+  
+}
+
+.full-description{
+  color: #1976d2;
+  cursor: pointer;
 }
