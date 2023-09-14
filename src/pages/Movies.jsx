@@ -34,7 +34,7 @@ const Movies = () => {
     };
     const fetch = async () => {
       const res = await axios.get(url, options);
-      console.log(res.data.results);
+
       setMovies(res.data.results);
     };
     fetch();

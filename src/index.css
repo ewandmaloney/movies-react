@@ -44,4 +44,5 @@ body{
 .full-description{
   color: #1976d2;
   cursor: pointer;
+  overflow: auto;
 }

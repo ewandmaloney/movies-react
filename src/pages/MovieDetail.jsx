@@ -15,6 +15,7 @@ const MovieDetail = () => {
   const handleClose = () => setOpen(false);
   const [movie, setMovie] = useState();
   const [item, setItem] = useState();
+  const [trailer, setTrailer] = useState();
   const [movieUrl, setMovieUrl] = useState(
     `https://api.themoviedb.org/3/movie/${params.id}?language=es-ES`
   );
@@ -69,9 +70,28 @@ const MovieDetail = () => {
     p: 4,
   };
 
+  const noTrailer = {
+    borderRadius: "10px",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 400,
+    bgcolor: "#181818",
+    border: "2px solid #000",
+    boxShadow: "24",
+    p: 4,
+  };
+
   const fullDescription = (text) => {
     setFullText((prevText) => (prevText ? null : text));
   };
+
+  useEffect(() => {
+    if (item !== undefined) {
+      setTrailer(item.filter((trailer) => trailer.type == "Trailer"));
+    }
+  }, [item]);
 
   return (
     <Box
@@ -144,6 +164,8 @@ const MovieDetail = () => {
                         : "Ver descripción completa"}
                     </p>
                   </>
+                ) : movie.overview.length == "" ? (
+                  <p>No description available for this movie</p>
                 ) : (
                   <>{movie.overview}</>
                 )}
@@ -164,35 +186,50 @@ const MovieDetail = () => {
                   >
                     Ver trailer
                   </Button>
-                  <Modal
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                  >
-                    <Box sx={style}>
-                      <Typography
-                        textAlign="center"
-                        color="white"
-                        id="modal-modal-title"
-                        variant="h4"
-                        component="h2"
-                      >
-                        Trailer oficial
-                      </Typography>
-                      <Typography textAlign="center">
-                        <iframe
-                          width="800"
-                          height="400"
-                          src={`https://www.youtube.com/embed/${item[0].key}`}
-                          frameBorder="0"
-                          allow="autoplay; encrypted-media"
-                          allowFullScreen
-                          title="video"
-                        />
-                      </Typography>
-                    </Box>
-                  </Modal>
+                  {trailer ? (
+                    <Modal
+                      open={open}
+                      onClose={handleClose}
+                      aria-labelledby="modal-modal-title"
+                      aria-describedby="modal-modal-description"
+                    >
+                      <Box sx={trailer.length > 0 ? style : noTrailer}>
+                        <Typography
+                          textAlign="center"
+                          color="white"
+                          id="modal-modal-title"
+                          variant="h4"
+                          component="h2"
+                        >
+                          {trailer.length > 0 ? 'Trailer oficial' : 'Error'}
+                        </Typography>
+                        <Typography textAlign="center">
+                          {trailer.length > 0 ? (
+                            <>
+                              <iframe
+                                width="800"
+                                height="400"
+                                src={`https://www.youtube.com/embed/${trailer[0].key}`}
+                                frameBorder="0"
+                                allow="autoplay; encrypted-media"
+                                allowFullScreen
+                                title="video"
+                              />
+                            </>
+                          ) : (
+                            <Typography
+                              variant="h5"
+                              component="div"
+                              textAlign="center"
+                              color="white"
+                            >
+                              No trailer available for this movie
+                            </Typography>
+                          )}
+                        </Typography>
+                      </Box>
+                    </Modal>
+                  ) : null}
                 </Box>
               )}
             </Grid>
