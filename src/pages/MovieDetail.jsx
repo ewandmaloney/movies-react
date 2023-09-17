@@ -7,6 +7,7 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import LiveTvIcon from "@mui/icons-material/LiveTv";
+import { Stack } from "@mui/material";
 
 const MovieDetail = () => {
   const params = useParams();
@@ -35,7 +36,6 @@ const MovieDetail = () => {
     };
     const fetch = async () => {
       const res = await axios.get(movieTrailer, options);
-      console.log(res.data.results);
       setItem(res.data.results);
     };
     fetch();
@@ -109,7 +109,12 @@ const MovieDetail = () => {
         justifyContent="center"
       >
         {!movie ? null : (
-          <>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={{ xs: 1, sm: 1, md: 2 }}
+            useFlexGap
+            flexWrap="wrap"
+          >
             <Grid item>
               <img
                 className="moviesDetail-img"
@@ -201,9 +206,10 @@ const MovieDetail = () => {
                           variant="h4"
                           component="h2"
                         >
-                          {trailer.length > 0 ? 'Trailer oficial' : 'Error'}
+                          {trailer.length > 0 ? "Trailer oficial" : "Error"}
                         </Typography>
                         <Typography textAlign="center">
+                          {console.log(trailer)}
                           {trailer.length > 0 ? (
                             <>
                               <iframe
@@ -233,7 +239,7 @@ const MovieDetail = () => {
                 </Box>
               )}
             </Grid>
-          </>
+          </Stack>
         )}
       </Grid>
     </Box>
